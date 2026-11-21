@@ -165,10 +165,18 @@ class LearnerModelStore:
 
     def _save(self, data: Optional[Dict[str, Any]] = None) -> None:
         target = data if data is not None else self.data
-        tmp_path = f"{self.path}.tmp"
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            json.dump(target, f, indent=2)
-        os.replace(tmp_path, self.path)
+        try:
+            tmp_path = f"{self.path}.tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(target, f, indent=2)
+            os.replace(tmp_path, self.path)
+        except OSError:
+            fallback_path = "/tmp/phyx_learner_state.json"
+            try:
+                with open(fallback_path, "w", encoding="utf-8") as f:
+                    json.dump(target, f, indent=2)
+            except OSError:
+                pass
 
     def get_user_by_email(self, email: str) -> Optional[Dict[str, Any]]:
         return self.data["users"].get(email.strip().lower())
