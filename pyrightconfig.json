@@ -1,0 +1,6 @@
+{
+  "extraPaths": [
+    "adaptive-physics-tutor/backend",
+    "backend"
+  ]
+}

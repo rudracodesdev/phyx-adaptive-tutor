@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PHYX — Adaptive Exam-Prep Tutor &amp; AI Simulation Labs</title>
+  <link rel="stylesheet" href="offline.css" />
+  <script>var s=document.createElement("script");s.src="https://cdn.tailwindcss.com";document.head.appendChild(s);</script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="text-slate-100 min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-indigo-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
+    Skip to main content
+  </a>
+
+  <!-- TOP HEADER BAR (Clean PHYX Heading, No Scrolling Taskbar) -->
+  <header class="border-b border-slate-800/90 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div onclick="switchTab('home')" title="Return to PHYX Home Page" class="flex items-center gap-3 cursor-pointer group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 group-hover:scale-105 transition flex items-center justify-center font-extrabold text-xl text-white shadow-lg shadow-indigo-500/30">
+          Φ
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-xl tracking-wider text-white">PHYX</h1>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+              Offline Ready
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Class 10 Physics • BKT Learner Model, AI Lectures &amp; 8 Visual Labs</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          id="btn-back-home"
+          onclick="switchTab('home')"
+          class="hidden text-xs bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-xl font-medium transition"
+        >
+          ← Home
+        </button>
+
+        <button
+          id="btn-global-voice"
+          onclick="toggleUserVoiceInput(null, true)"
+          aria-label="Ask a voice query"
+          title="Speak any Physics doubt or website command"
+          class="text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/40 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition"
+        >
+          <span>🎙️</span> <span class="hidden sm:inline">Voice Query</span>
+        </button>
+
+        <div id="auth-header-guest" class="flex items-center gap-2">
+          <button onclick="openAuthModal('login')" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3.5 py-1.5 rounded-xl shadow-md shadow-indigo-600/30 transition">
+            Login / Sign Up
+          </button>
+        </div>
+
+        <div id="auth-header-user" class="hidden flex items-center gap-2">
+          <span id="header-user-badge" class="text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg font-medium"></span>
+          <button onclick="logoutUser()" class="text-xs text-slate-400 hover:text-white underline">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- VOICE TRANSCRIPT BANNER -->
+  <div id="voice-status-bar" aria-live="polite" class="hidden bg-indigo-950/90 border-b border-indigo-500/40 px-4 py-2 text-xs text-indigo-200">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <span id="voice-status-text">🎙️ Listening... Speak your Physics doubt or website command now.</span>
+      <button onclick="document.getElementById('voice-status-bar').classList.add('hidden')" class="text-indigo-300 hover:text-white">✕</button>
+    </div>
+  </div>
+
+  <main id="main-content" class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <!-- ================================================================== -->
+    <!-- LANDING HOME PAGE WITH LIVE INTERACTIVE PHYSICS ANIMATION          -->
+    <!-- ================================================================== -->
+    <section id="view-home" class="space-y-14 pb-10">
+      <div class="relative rounded-3xl overflow-hidden border border-slate-800/90 bg-slate-950/90 shadow-2xl min-h-[420px] flex items-center">
+        <canvas id="home-hero-canvas" class="absolute inset-0 w-full h-full block cursor-crosshair" aria-hidden="true"></canvas>
+
+        <div class="relative z-10 px-6 py-12 sm:px-12 max-w-3xl space-y-6 pointer-events-none">
+          <div class="animate-hero-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-3.5 py-1.5 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            PHYX • 2026–27 NCERT Class 10 Physics Interactive Platform
+          </div>
+
+          <h2 class="animate-hero-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Learn Physics That Adapts to <span class="animated-gradient-text">How You Think</span>
+          </h2>
+
+          <p class="animate-hero-2 text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+            Move your cursor across the live electromagnetic field or choose any workspace below—diagnose conceptual gaps, practice MCQ &amp; subjective derivations, explore 8 interactive labs, or learn with Prof. Aria.
+          </p>
+
+          <div class="animate-hero-3 flex flex-wrap items-center gap-3 pt-1 pointer-events-auto">
+            <button onclick="switchTab('tutor')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-6 py-3 rounded-xl shadow-lg shadow-indigo-600/35 transition">
+              🎯 Start Adaptive Tutor →
+            </button>
+            <button onclick="switchTab('visualizer')" class="bg-slate-900/90 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 font-semibold text-sm px-5 py-3 rounded-xl transition">
+              🔬 Open 8 Physics Labs
+            </button>
+            <button onclick="switchTab('classroom')" class="bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 font-semibold text-sm px-5 py-3 rounded-xl transition">
+              👩‍🏫 Prof. Aria AI Lecture
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workspace Selector Cards -->
+      <div class="space-y-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Explore Workspaces</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-left">
+          <button onclick="switchTab('tutor')" class="p-4 rounded-2xl bg-slate-900/70 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/60 transition text-left space-y-1.5">
+            <div class="text-xl">🎯</div>
+            <div class="font-bold text-white text-sm">Adaptive Tutor</div>
+            <p class="text-xs text-slate-400">Diagnostic placement, MCQ + subjective practice &amp; reasoning checks.</p>
+          </button>
+          <button onclick="switchTab('graph')" class="p-4 rounded-2xl bg-slate-900/70 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/60 transition text-left space-y-1.5">
+            <div class="text-xl">🕸️</div>
+            <div class="font-bold text-white text-sm">Concept Graph &amp; SM-2</div>
+            <p class="text-xs text-slate-400">13-node 2026–27 NCERT prerequisite DAG &amp; spaced-repetition schedule.</p>
+          </button>
+          <button onclick="switchTab('visualizer')" class="p-4 rounded-2xl bg-slate-900/70 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/60 transition text-left space-y-1.5">
+            <div class="text-xl">🔬</div>
+            <div class="font-bold text-white text-sm">Concept Visualizer (8 Labs)</div>
+            <p class="text-xs text-slate-400">Optics, Human Eye defects, Prism, Circuits, Solenoid &amp; Lorentz Force labs.</p>
+          </button>
+          <button onclick="switchTab('classroom')" class="p-4 rounded-2xl bg-slate-900/70 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/60 transition text-left space-y-1.5">
+            <div class="text-xl">👩‍🏫</div>
+            <div class="font-bold text-white text-sm">Prof. Aria AI Lecture</div>
+            <p class="text-xs text-slate-400">Step-by-step smart-board lectures with live mid-lesson doubt Q&amp;A.</p>
+          </button>
+          <button onclick="switchTab('teacher')" class="p-4 rounded-2xl bg-slate-900/70 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/60 transition text-left space-y-1.5">
+            <div class="text-xl">📊</div>
+            <div class="font-bold text-white text-sm">Teacher Dashboard</div>
+            <p class="text-xs text-slate-400">Class-wide concept gaps, recurring misconceptions &amp; CSV export.</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- HOW DOES IT WORK? (Standard Unboxed Heading) -->
+      <div id="how-it-works-section" class="pt-4 space-y-6">
+        <div class="space-y-2 max-w-3xl">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">How Does PHYX Work?</h2>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Generic AI tutors only grade final answers and forget what a student struggles with between turns. PHYX maintains a persistent probabilistic learner model over the 2026–27 NCERT Class 10 Physics prerequisite graph—diagnosing why a mistake happened and adapting difficulty and spaced reviews automatically.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-white text-base"><span class="text-indigo-400 font-mono mr-1.5">01.</span>Diagnostic Placement</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              A 5-question cross-syllabus assessment probes Light, Human Eye, Electricity, and Magnetism simultaneously to initialize mastery priors and catch early sign-convention or circuit misconceptions.
+            </p>
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-white text-base"><span class="text-cyan-400 font-mono mr-1.5">02.</span>Prerequisite Concept DAG</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              All 13 NCERT Class 10 Physics concepts (P1–P13) are connected in a Directed Acyclic Graph. Mastery updates propagate along prerequisite edges so foundational gaps are strengthened first.
+            </p>
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-white text-base"><span class="text-emerald-400 font-mono mr-1.5">03.</span>Bayesian Knowledge Tracing (BKT)</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              After every answer, mastery probability P(L) updates via Bayes' rule using difficulty-calibrated Slip and Guess parameters—preventing single lucky guesses from inflating mastery scores.
+            </p>
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-white text-base"><span class="text-rose-400 font-mono mr-1.5">04.</span>Reasoning Misconception Detection</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Students submit step-by-step reasoning alongside MCQ or subjective answers. Even if an MCQ option is guessed right, flawed or missing reasoning triggers conservative BKT updates and targeted remediation.
+            </p>
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-white text-base"><span class="text-amber-400 font-mono mr-1.5">05.</span>SM-2 Spaced Repetition</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Each concept tracks an Easiness Factor (EF) and review interval. Missed concepts reschedule in 12 hours, while verified concepts expand intervals (1d → 3d → 7d+).
+            </p>
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-white text-base"><span class="text-violet-400 font-mono mr-1.5">06.</span>Prof. Aria Lectures &amp; 8 Visual Labs</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Students can pause Prof. Aria's step-by-step derivations mid-sentence to ask live doubts, manipulate 8 real-time physics simulations, and use hands-free voice-to-text input.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 1: ADAPTIVE TUTOR & DIAGNOSTIC                                -->
+    <!-- ================================================================== -->
+    <section id="view-tutor" class="hidden space-y-6">
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="glass-card rounded-2xl p-4">
+          <div class="text-[11px] text-slate-400 uppercase tracking-wider">Overall BKT Mastery</div>
+          <div id="stat-overall-mastery" class="text-2xl font-extrabold text-indigo-400 mt-1">25%</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4">
+          <div class="text-[11px] text-slate-400 uppercase tracking-wider">SM-2 Reviews Due</div>
+          <div id="stat-due-count" class="text-2xl font-extrabold text-amber-400 mt-1">0 Concepts</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4">
+          <div class="text-[11px] text-slate-400 uppercase tracking-wider">Active Misconceptions</div>
+          <div id="stat-misc-count" class="text-2xl font-extrabold text-rose-400 mt-1">0 Detected</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4">
+          <div class="text-[11px] text-slate-400 uppercase tracking-wider">Review Clock Offset</div>
+          <div id="stat-clock-offset" class="text-2xl font-extrabold text-emerald-400 mt-1">+0 hrs</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4 col-span-2 lg:col-span-1 flex flex-col justify-center gap-1.5">
+          <button onclick="simulateTime(24)" class="w-full text-xs bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 py-1.5 px-2.5 rounded-lg font-medium transition">
+            ⏩ Fast-Forward +24h
+          </button>
+          <button onclick="resetStudent()" class="w-full text-xs bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 py-1.5 px-2.5 rounded-lg transition">
+            ↺ Reset Learner State
+          </button>
+        </div>
+      </div>
+
+      <div id="diagnostic-panel" class="hidden glass-card border-indigo-500/50 rounded-2xl p-6 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full">
+              Step 1 • Cross-Syllabus Placement Calibration
+            </span>
+            <h2 class="text-xl font-bold text-white mt-2">Class 10 Physics Diagnostic Assessment</h2>
+            <p class="text-sm text-slate-400">
+              Complete these 5 diagnostic items with your step-by-step reasoning so the Bayesian Learner Model can map your initial mastery and misconceptions.
+            </p>
+          </div>
+          <button onclick="skipDiagnostic()" class="text-xs text-slate-400 hover:text-white underline">
+            Skip to Adaptive Practice →
+          </button>
+        </div>
+        <div id="diagnostic-questions-container" class="space-y-4"></div>
+        <div class="mt-6 flex justify-end">
+          <button onclick="submitDiagnostic()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition">
+            Initialize My Learner Model →
+          </button>
+        </div>
+      </div>
+
+      <div id="diagnostic-summary-card" class="hidden glass-card border-emerald-500/40 rounded-2xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full">
+              ✓ Placement Calibration Complete
+            </span>
+            <h3 class="text-base font-bold text-white mt-1">Your Initial Learner Model Diagnostic Summary</h3>
+          </div>
+          <button onclick="document.getElementById('diagnostic-summary-card').classList.add('hidden')" class="text-xs text-slate-400 hover:text-white">✕</button>
+        </div>
+        <div id="diagnostic-summary-body" class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-card rounded-2xl p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="q-concept-badge" class="text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg">
+                P2 • Spherical Mirrors
+              </span>
+              <span id="q-difficulty-badge" class="text-xs font-semibold uppercase bg-slate-800 text-slate-200 px-2.5 py-1 rounded-lg">
+                MEDIUM
+              </span>
+              <span id="q-due-badge" class="hidden text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg">
+                ⏰ Due for Spaced Review
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="q-format-override" onchange="loadNextQuestion(currentQuestion ? currentQuestion.concept_id : null)"
+                      aria-label="Question format"
+                      class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-cyan-200">
+                <option value="mixed">Format: MCQ + Subjective</option>
+                <option value="mcq">Format: MCQ Only</option>
+                <option value="subjective">Format: Subjective Only</option>
+              </select>
+              <select id="q-difficulty-override" onchange="loadNextQuestion(currentQuestion ? currentQuestion.concept_id : null)"
+                      aria-label="Difficulty calibration"
+                      class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200">
+                <option value="">Calibrated: Auto</option>
+                <option value="easy">Calibrate: Easy</option>
+                <option value="medium">Calibrate: Medium</option>
+                <option value="hard">Calibrate: Hard</option>
+              </select>
+              <button onclick="loadNextQuestion()" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">
+                ↻ Next Targeted
+              </button>
+            </div>
+          </div>
+
+          <div id="q-remediation-banner" class="hidden bg-rose-950/60 border border-rose-500/40 rounded-xl p-3.5 text-xs text-rose-200">
+            <strong>🎯 Targeted Misconception Remediation:</strong> <span id="q-remediation-text"></span>
+          </div>
+
+          <div>
+            <h2 id="q-prompt" class="text-lg font-semibold text-white leading-relaxed">Loading adaptive question...</h2>
+          </div>
+
+          <div id="q-options" role="radiogroup" aria-label="Answer options" class="space-y-2.5"></div>
+          <div id="q-subjective-guide" class="hidden p-3.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200">
+            <strong>✍️ Subjective Board-Exam Question:</strong> Write your complete step-by-step solution below (include the governing formula, sign convention, unit conversion, and final numerical answer).
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <label for="q-reasoning" class="block text-sm font-medium text-slate-200">
+                Your Step-by-Step Reasoning
+                <span class="text-xs text-slate-400 font-normal">(Required — inspected to detect hidden conceptual flaws)</span>
+              </label>
+              <button type="button" id="btn-dictate-reasoning" onclick="toggleUserVoiceInput('q-reasoning', false)"
+                      class="text-xs bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 px-2.5 py-1 rounded-lg transition">
+                🎙️ Dictate Reasoning
+              </button>
+            </div>
+            <textarea
+              id="q-reasoning"
+              rows="3"
+              placeholder="Write the governing formula, sign convention, or physical reasoning behind your choice..."
+              class="w-full bg-slate-950/90 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500"
+            ></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="space-y-0.5">
+              <div id="q-selection-reason" class="text-xs font-medium text-cyan-300"></div>
+              <span id="q-source-label" class="text-[11px] text-slate-400"></span>
+            </div>
+            <button id="btn-submit-answer" onclick="submitPracticeAnswer()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-600/25 transition">
+              Submit Answer &amp; Reasoning
+            </button>
+          </div>
+
+          <div id="feedback-box" aria-live="polite" class="hidden rounded-xl p-5 border space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span id="fb-status" class="font-bold text-base"></span>
+              <span id="fb-mastery-delta" class="text-xs font-mono px-2.5 py-1 rounded bg-slate-950/70 text-slate-200"></span>
+            </div>
+            <div id="fb-misconception-pill" class="hidden bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs px-3 py-2 rounded-lg">
+              <strong>Detected Misconception:</strong> <span id="fb-misconception-text"></span>
+            </div>
+            <p id="fb-explanation" class="text-sm leading-relaxed text-slate-100"></p>
+            <div id="fb-model-solution-box" class="hidden p-3 rounded-xl bg-slate-950/90 border border-cyan-500/30 text-xs font-mono text-cyan-200 whitespace-pre-line"></div>
+            <p id="fb-hint" class="text-xs italic text-slate-300 border-t border-white/10 pt-2"></p>
+            <div class="pt-2 flex justify-end">
+              <button onclick="loadNextQuestion()" class="bg-white text-slate-950 hover:bg-slate-200 font-semibold text-sm px-4 py-2 rounded-lg transition">
+                Next Calibrated Question →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="glass-card rounded-2xl p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-white text-sm">Live Concept Mastery</h3>
+              <span class="text-[11px] text-slate-400">Click node to practice</span>
+            </div>
+            <div id="sidebar-mastery-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="font-semibold text-white text-sm mb-3">Reasoning &amp; Misconception Log</h3>
+            <div id="sidebar-history-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1 text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 2: PREREQUISITE CONCEPT GRAPH & SM-2 SCHEDULER                -->
+    <!-- ================================================================== -->
+    <section id="view-graph" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white">Class 10 Physics Prerequisite Concept Graph (DAG)</h2>
+            <p class="text-sm text-slate-400">
+              Directed edges represent prerequisite dependencies across all 4 NCERT chapters. Click any node to inspect its formula and prerequisites.
+            </p>
+          </div>
+          <div class="flex items-center gap-4 text-xs">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Weak (&lt;45%)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Developing (45–74%)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span> Mastered (≥75%)</span>
+          </div>
+        </div>
+        <div class="overflow-x-auto bg-slate-950/90 rounded-xl border border-slate-800 p-3">
+          <svg id="concept-graph-svg" viewBox="0 0 960 520" role="img" aria-label="Class 10 Physics Concept Graph" class="w-full min-w-[760px] h-auto"></svg>
+        </div>
+        <div id="graph-node-inspector" class="mt-4 p-4 rounded-xl bg-slate-950/90 border border-indigo-500/30 flex flex-wrap items-center justify-between gap-4 text-xs">
+          <div>
+            <span class="text-indigo-400 font-bold uppercase tracking-wider">Node Inspector (Click any node above)</span>
+            <p id="inspector-title" class="text-sm font-bold text-white mt-0.5">P2 • Spherical Mirrors &amp; Sign Convention</p>
+            <p id="inspector-meta" class="text-slate-300 mt-0.5">Formula: 1/f = 1/v + 1/u | Prerequisites: P1</p>
+          </div>
+          <button id="inspector-practice-btn" onclick="switchTab('tutor'); loadNextQuestion('P2')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-xl">
+            🎯 Practice Selected Concept
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h3 class="text-lg font-bold text-white">SM-2 Spaced-Repetition Schedule</h3>
+          <button onclick="practiceNextDueConcept()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold px-3.5 py-1.5 rounded-xl">
+            ⏰ Practice Next Due Concept
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-xs uppercase text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Concept</th>
+                <th class="py-3 px-3">Mastery</th>
+                <th class="py-3 px-3">SM-2 Ease</th>
+                <th class="py-3 px-3">Interval</th>
+                <th class="py-3 px-3">Review Status</th>
+                <th class="py-3 px-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="sm2-table-body" class="divide-y divide-slate-800/70"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 3: INTERACTIVE CONCEPT VISUALIZER (8 SIMULATION LABS)         -->
+    <!-- ================================================================== -->
+    <section id="view-visualizer" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white">PHYX Interactive Class 10 Physics Simulation Labs (8 Labs)</h2>
+          <p class="text-sm text-slate-400">
+            Manipulate physical variables in real time across all four 2026–27 NCERT chapters. <strong class="text-emerald-400">4 core labs are free</strong>; log in to unlock all 8 labs.
+          </p>
+        </div>
+        <div id="viz-tier-badge" class="text-xs bg-amber-500/15 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-xl font-medium">
+          Free Guest Tier (4/8 Labs Unlocked)
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- LAB 1 (FREE • Ch 9 Light) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">Free Access • Ch 9: Light</span>
+              <h3 class="text-base font-bold text-white mt-1">1. Spherical Mirror &amp; Convex Lens Ray Tracer</h3>
+            </div>
+            <select id="opt-type" onchange="drawOpticsLab()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
+              <option value="concave_mirror">Concave Mirror</option>
+              <option value="convex_lens">Convex Lens</option>
+            </select>
+          </div>
+          <canvas id="canvas-optics" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Focal Length (|f|):</span><span id="opt-f-val" class="font-mono text-indigo-300">15 cm</span></div>
+              <input id="opt-f" type="range" min="10" max="30" value="15" oninput="drawOpticsLab()" class="w-full accent-indigo-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Object Distance (u):</span><span id="opt-u-val" class="font-mono text-emerald-300">-35 cm</span></div>
+              <input id="opt-u" type="range" min="10" max="55" value="35" oninput="drawOpticsLab()" class="w-full accent-emerald-500" />
+            </label>
+          </div>
+          <div id="opt-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 2 (FREE • Ch 10 Human Eye) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">Free Access • Ch 10: Human Eye</span>
+              <h3 class="text-base font-bold text-white mt-1">2. Myopia &amp; Hypermetropia Corrective Lens Lab</h3>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <select id="eye-cond" onchange="drawEyeLab()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white">
+                <option value="myopia">Myopia (Nearsighted)</option>
+                <option value="hypermetropia">Hypermetropia (Farsighted)</option>
+              </select>
+              <label class="flex items-center gap-1 cursor-pointer text-amber-300 font-semibold">
+                <input id="eye-corr" type="checkbox" onchange="drawEyeLab()" class="accent-amber-400" /> Spectacles
+              </label>
+            </div>
+          </div>
+          <canvas id="canvas-eye" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="text-xs">
+            <label class="space-y-1 block">
+              <div class="flex justify-between"><span>Defect Far / Near Point Distance:</span><span id="eye-dist-val" class="font-mono text-cyan-300">100 cm</span></div>
+              <input id="eye-dist" type="range" min="50" max="200" step="10" value="100" oninput="drawEyeLab()" class="w-full accent-cyan-500" />
+            </label>
+          </div>
+          <div id="eye-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 3 (FREE • Ch 11 Electricity) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">Free Access • Ch 11: Electricity</span>
+              <h3 class="text-base font-bold text-white mt-1">3. Ohm's Law &amp; Series/Parallel Circuit Lab</h3>
+            </div>
+            <select id="cir-topo" onchange="drawCircuitLab()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
+              <option value="parallel">Parallel Circuit</option>
+              <option value="series">Series Circuit</option>
+            </select>
+          </div>
+          <canvas id="canvas-circuit" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Voltage:</span><span id="cir-v-val" class="font-mono text-sky-300">12 V</span></div>
+              <input id="cir-v" type="range" min="3" max="24" value="12" oninput="drawCircuitLab()" class="w-full accent-sky-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>R1:</span><span id="cir-r1-val" class="font-mono text-indigo-300">6 Ω</span></div>
+              <input id="cir-r1" type="range" min="2" max="20" value="6" oninput="drawCircuitLab()" class="w-full accent-indigo-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>R2:</span><span id="cir-r2-val" class="font-mono text-indigo-300">3 Ω</span></div>
+              <input id="cir-r2" type="range" min="2" max="20" value="3" oninput="drawCircuitLab()" class="w-full accent-indigo-500" />
+            </label>
+          </div>
+          <div id="cir-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 4 (FREE • Ch 12 Magnetism) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">Free Access • Ch 12: Magnetism</span>
+              <h3 class="text-base font-bold text-white mt-1">4. Solenoid Magnetic Field &amp; Polarity Lab</h3>
+            </div>
+            <select id="sol-dir" onchange="drawSolenoidLab()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white">
+              <option value="right">Field: Left → Right</option>
+              <option value="left">Field: Right → Left</option>
+            </select>
+          </div>
+          <canvas id="canvas-solenoid" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Current (I):</span><span id="sol-i-val" class="font-mono text-amber-300">5 A</span></div>
+              <input id="sol-i" type="range" min="1" max="10" value="5" oninput="drawSolenoidLab()" class="w-full accent-amber-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Coil Turns:</span><span id="sol-n-val" class="font-mono text-emerald-300">12 turns</span></div>
+              <input id="sol-n" type="range" min="6" max="20" value="12" oninput="drawSolenoidLab()" class="w-full accent-emerald-500" />
+            </label>
+          </div>
+          <div id="sol-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 5 (MEMBER • Ch 9 Light) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4 relative overflow-hidden">
+          <div id="viz-lock-5" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xl">🔒</div>
+            <h4 class="font-bold text-white text-sm">Snell's Law &amp; Total Internal Reflection Lab</h4>
+            <p class="text-xs text-slate-400 max-w-xs">Log in or use 1-Click Demo Student to unlock all 8 interactive PHYX labs.</p>
+            <button onclick="openAuthModal('login')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-xl">Unlock All 8 Labs</button>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">Member Lab • Ch 9: Light</span>
+            <h3 class="text-base font-bold text-white mt-1">5. Snell's Law &amp; Total Internal Reflection</h3>
+          </div>
+          <canvas id="canvas-refraction" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Medium n₁:</span><span id="ref-n1-val" class="font-mono">1.50</span></div>
+              <input id="ref-n1" type="range" min="1.0" max="2.42" step="0.05" value="1.50" oninput="drawRefractionLab()" class="w-full accent-indigo-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Medium n₂:</span><span id="ref-n2-val" class="font-mono">1.00</span></div>
+              <input id="ref-n2" type="range" min="1.0" max="2.42" step="0.05" value="1.00" oninput="drawRefractionLab()" class="w-full accent-indigo-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Incident ∠i:</span><span id="ref-angle-val" class="font-mono">35°</span></div>
+              <input id="ref-angle" type="range" min="0" max="80" value="35" oninput="drawRefractionLab()" class="w-full accent-emerald-500" />
+            </label>
+          </div>
+          <div id="ref-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 6 (MEMBER • Ch 10 Human Eye) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4 relative overflow-hidden">
+          <div id="viz-lock-6" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xl">🔒</div>
+            <h4 class="font-bold text-white text-sm">Triangular Glass Prism Dispersion (VIBGYOR) Lab</h4>
+            <p class="text-xs text-slate-400 max-w-xs">Log in to split white light into its 7 spectral wavelengths and measure angular deviation.</p>
+            <button onclick="openAuthModal('login')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-xl">Unlock All 8 Labs</button>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">Member Lab • Ch 10: Human Eye</span>
+            <h3 class="text-base font-bold text-white mt-1">6. Prism Dispersion &amp; VIBGYOR Spectrum Lab</h3>
+          </div>
+          <canvas id="canvas-prism" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Incidence Angle:</span><span id="prism-angle-val" class="font-mono">45°</span></div>
+              <input id="prism-angle" type="range" min="30" max="65" value="45" oninput="drawPrismLab()" class="w-full accent-indigo-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Glass Dispersion:</span><span id="prism-disp-val" class="font-mono">1.4</span></div>
+              <input id="prism-disp" type="range" min="0.8" max="2.2" step="0.1" value="1.4" oninput="drawPrismLab()" class="w-full accent-purple-500" />
+            </label>
+          </div>
+          <div id="prism-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 7 (MEMBER • Ch 11 Electricity) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4 relative overflow-hidden">
+          <div id="viz-lock-7" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xl">🔒</div>
+            <h4 class="font-bold text-white text-sm">Parallel vs. Series Bulb Brightness &amp; Power Lab</h4>
+            <p class="text-xs text-slate-400 max-w-xs">Compare 100W and 60W bulbs in parallel vs. series circuits across variable mains voltage.</p>
+            <button onclick="openAuthModal('login')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-xl">Unlock All 8 Labs</button>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">Member Lab • Ch 11: Electricity</span>
+              <h3 class="text-base font-bold text-white mt-1">7. Joule Heating &amp; Bulb Brightness Lab</h3>
+            </div>
+            <select id="bulb-mode" onchange="drawBulbPowerLab()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white">
+              <option value="parallel">Parallel (Fixed V)</option>
+              <option value="series">Series (Fixed I)</option>
+            </select>
+          </div>
+          <canvas id="canvas-bulbs" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="text-xs">
+            <label class="space-y-1 block">
+              <div class="flex justify-between"><span>Mains Supply Voltage:</span><span id="bulb-v-val" class="font-mono text-amber-300">220 V</span></div>
+              <input id="bulb-v" type="range" min="110" max="240" step="10" value="220" oninput="drawBulbPowerLab()" class="w-full accent-amber-500" />
+            </label>
+          </div>
+          <div id="bulb-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+
+        <!-- LAB 8 (MEMBER • Ch 12 Magnetism) -->
+        <div class="glass-card rounded-2xl p-5 space-y-4 relative overflow-hidden">
+          <div id="viz-lock-8" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xl">🔒</div>
+            <h4 class="font-bold text-white text-sm">Fleming's Left-Hand Lorentz Force Lab</h4>
+            <p class="text-xs text-slate-400 max-w-xs">Log in to experiment with magnetic field vectors, conductor angles, and F = B·I·L·sin(θ).</p>
+            <button onclick="openAuthModal('login')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-xl">Unlock All 8 Labs</button>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">Member Lab • Ch 12: Magnetism</span>
+            <h3 class="text-base font-bold text-white mt-1">8. Magnetic Field &amp; Fleming's Left-Hand Force</h3>
+          </div>
+          <canvas id="canvas-magnetism" width="480" height="220" class="w-full bg-slate-950 rounded-xl border border-slate-800"></canvas>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Current I:</span><span id="mag-i-val" class="font-mono">5 A</span></div>
+              <input id="mag-i" type="range" min="0" max="10" value="5" oninput="drawMagnetismLab()" class="w-full accent-amber-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Field B:</span><span id="mag-b-val" class="font-mono">1.2 T</span></div>
+              <input id="mag-b" type="range" min="0.2" max="2.0" step="0.1" value="1.2" oninput="drawMagnetismLab()" class="w-full accent-sky-500" />
+            </label>
+            <label class="space-y-1">
+              <div class="flex justify-between"><span>Angle θ:</span><span id="mag-theta-val" class="font-mono">90°</span></div>
+              <input id="mag-theta" type="range" min="0" max="90" value="90" oninput="drawMagnetismLab()" class="w-full accent-emerald-500" />
+            </label>
+          </div>
+          <div id="mag-readout" class="text-xs font-mono bg-slate-950/90 border border-slate-800 rounded-lg px-3 py-2 text-amber-300"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 4: PROF. ARIA INTERACTIVE AI LECTURE                          -->
+    <!-- ================================================================== -->
+    <section id="view-classroom" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div id="aria-lecturer-card" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/30">
+            👩‍🏫
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold text-white">Prof. Aria — Interactive AI Physics Lecture</h2>
+              <span id="lecture-status-badge" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                Ready to Explain
+              </span>
+            </div>
+            <p class="text-xs text-slate-400">Step-by-step smart-board derivations with word-level Pause/Resume &amp; live mid-lecture doubt interruption.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <select id="lecture-topic-select" onchange="loadLectureTopic(this.value, false)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            <option value="P1">P1: Reflection &amp; Plane Mirrors</option>
+            <option value="P2" selected>P2: Spherical Mirrors &amp; Sign Convention</option>
+            <option value="P3">P3: Refraction &amp; Snell's Law</option>
+            <option value="P4">P4: Spherical Lenses &amp; Optical Power</option>
+            <option value="P5">P5: Electric Current &amp; Potential Difference</option>
+            <option value="P6">P6: Ohm's Law &amp; Resistivity</option>
+            <option value="P7">P7: Series &amp; Parallel Circuits</option>
+            <option value="P8">P8: Joule Heating &amp; Electric Power</option>
+            <option value="P9">P9: Magnetic Fields &amp; Right-Hand Rule</option>
+            <option value="P10">P10: Force on Current &amp; Fleming's Rule</option>
+            <option value="P11">P11: Human Eye &amp; Vision Defects (Ch 10)</option>
+            <option value="P12">P12: Prism Dispersion &amp; Scattering (Ch 10)</option>
+            <option value="P13">P13: Domestic Circuits, Fuse &amp; Earthing (Ch 12)</option>
+          </select>
+          <button onclick="loadWeakestTopicForLecture()" class="bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 px-3 py-2 rounded-xl font-semibold transition">
+            🎯 Auto-Pick Weakest Topic
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-card rounded-2xl p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span id="lecture-step-badge" class="text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg">
+                Step 1 of 4
+              </span>
+              <h3 id="lecture-step-heading" class="font-bold text-white text-base">Step 1: New Cartesian Sign Convention</h3>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs">
+              <label for="lecture-speed-select" class="text-slate-400">Speed:</label>
+              <select id="lecture-speed-select" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white">
+                <option value="0.85">0.85x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.2">1.2x</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="lecture-step-pills" class="flex flex-wrap gap-2"></div>
+
+          <div class="bg-slate-950/95 border border-cyan-500/30 rounded-2xl p-5 space-y-2 shadow-inner">
+            <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1">📐 Prof. Aria Smart Board</div>
+            <div id="lecture-smart-board" class="space-y-1.5"></div>
+          </div>
+
+          <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-4 space-y-1.5">
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-indigo-300">📖 Step-by-Step Explanation</div>
+            <p id="lecture-live-transcript" aria-live="polite" class="text-sm text-slate-100 leading-relaxed"></p>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="prevLectureStep()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-xl">
+                ⏮ Prev Step
+              </button>
+              <button id="btn-lecture-play" onclick="playOrResumeLecture()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-lg shadow-indigo-600/25">
+                ▶ Play Explanation
+              </button>
+              <button onclick="stopLecturePlayback(false)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-xl">
+                ⏸ Pause
+              </button>
+              <button onclick="jumpToLectureStep(activeStepIdx); playOrResumeLecture();" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded-xl">
+                ↺ Restart Step
+              </button>
+              <button onclick="nextLectureStep()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-xl">
+                Next Step ⏭
+              </button>
+            </div>
+
+            <button id="btn-resume-lecture" onclick="playOrResumeLecture()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-lg">
+              ▶ Resume From Where Left
+            </button>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 px-2.5 py-0.5 rounded-full">
+                Live Doubt Interruption
+              </span>
+              <h3 class="font-bold text-white text-base mt-1.5">Ask Prof. Aria While She Explains</h3>
+              <p class="text-xs text-slate-400">Asking a doubt pauses the lecture at the exact word, answers in context, and lets you resume seamlessly.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 text-[11px]">
+              <button onclick="askProfAriaDoubt('Why does this rule work physically?')" class="bg-slate-800 hover:bg-indigo-600/40 text-indigo-200 border border-slate-700 px-2.5 py-1 rounded-lg transition">
+                🤔 Why does this work?
+              </button>
+              <button onclick="askProfAriaDoubt('Show me a solved board exam numerical')" class="bg-slate-800 hover:bg-indigo-600/40 text-indigo-200 border border-slate-700 px-2.5 py-1 rounded-lg transition">
+                🧮 Solved numerical
+              </button>
+              <button onclick="askProfAriaDoubt('What is the #1 exam trap here?')" class="bg-slate-800 hover:bg-indigo-600/40 text-indigo-200 border border-slate-700 px-2.5 py-1 rounded-lg transition">
+                ⚠️ Common exam trap
+              </button>
+              <button onclick="askProfAriaDoubt('Can you explain this step again simply?')" class="bg-slate-800 hover:bg-indigo-600/40 text-indigo-200 border border-slate-700 px-2.5 py-1 rounded-lg transition">
+                🔁 Explain again
+              </button>
+            </div>
+          </div>
+
+          <div id="lecture-doubt-thread" class="flex-1 space-y-2.5 overflow-y-auto max-h-72 min-h-[180px] pr-1 bg-slate-950/70 rounded-xl p-3 border border-slate-800">
+            <div class="p-2.5 rounded-xl bg-indigo-950/60 border border-indigo-500/30 text-indigo-100 text-xs">
+              <div class="font-bold text-[11px] text-cyan-300">Prof. Aria</div>
+              Start the lecture on the left—if anything is unclear at any step, type or dictate your doubt right below!
+            </div>
+          </div>
+
+          <div class="flex gap-1.5">
+            <button type="button" onclick="interruptLectureForDoubt(); toggleUserVoiceInput('lecture-doubt-input', true)" title="Speak your live doubt"
+                    class="bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/40 px-2.5 py-2 rounded-xl text-xs">
+              🎙️
+            </button>
+            <input
+              id="lecture-doubt-input"
+              type="text"
+              onfocus="interruptLectureForDoubt()"
+              onkeydown="if(event.key==='Enter') askProfAriaDoubt()"
+              placeholder="Interrupt &amp; ask a live doubt..."
+              class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+            />
+            <button onclick="askProfAriaDoubt()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl">
+              Ask
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 5: TEACHER DASHBOARD                                          -->
+    <!-- ================================================================== -->
+    <section id="view-teacher" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-bold text-white">Teacher Cohort Intelligence Dashboard</h2>
+          <p class="text-xs text-slate-400">Real-time aggregation of student BKT mastery scores and reasoning-extracted misconceptions across Class 10.</p>
+        </div>
+        <button onclick="exportTeacherCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2 rounded-xl transition">
+          ⬇ Export Cohort Report (CSV)
+        </button>
+      </div>
+
+      <div id="teacher-unit-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-6">
+          <h3 class="text-base font-bold text-white mb-1">Class-Wide Concept Gaps</h3>
+          <p class="text-xs text-slate-400 mb-4">Ranked from lowest average cohort mastery to highest.</p>
+          <div id="teacher-gaps-list" class="space-y-3"></div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6">
+          <h3 class="text-base font-bold text-white mb-1">Top Recurring Misconceptions Across Class</h3>
+          <p class="text-xs text-slate-400 mb-4">Extracted automatically from students' written reasoning.</p>
+          <div id="teacher-misconceptions-list" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-base font-bold text-white mb-4">Student Intervention Roster</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-xs uppercase text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Student</th>
+                <th class="py-3 px-3">Avg Mastery</th>
+                <th class="py-3 px-3">Primary Bottleneck Concept</th>
+                <th class="py-3 px-3">Unresolved Misconceptions</th>
+                <th class="py-3 px-3">Intervention Status</th>
+              </tr>
+            </thead>
+            <tbody id="teacher-roster-body" class="divide-y divide-slate-800/70"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FLOATING PERSONAL AI CHATBOT & VOICE ASSISTANT -->
+  <div class="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
+    <div id="chatbot-drawer" role="dialog" aria-label="PHYX Personal AI Assistant" class="hidden w-80 sm:w-96 glass-card border-indigo-500/40 rounded-2xl shadow-2xl overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🤖</span>
+          <div>
+            <h3 class="font-bold text-white text-xs">PHYX Personal AI Assistant</h3>
+            <p class="text-[10px] text-indigo-100">Study Doubts • Website Help • Voice Input</p>
+          </div>
+        </div>
+        <button onclick="toggleChatbotDrawer()" aria-label="Close chatbot" class="text-white/80 hover:text-white text-sm font-bold">✕</button>
+      </div>
+
+      <div id="chatbot-messages" class="p-3.5 space-y-2.5 max-h-80 overflow-y-auto text-xs bg-slate-950/90">
+        <div class="p-3 rounded-xl bg-indigo-950/60 border border-indigo-500/30 text-indigo-100">
+          Hi! Ask me any Class 10 Physics doubt, ask <em>"What is my weakest topic?"</em>, or say <em>"Open visualizer"</em>.
+        </div>
+      </div>
+
+      <div class="p-2.5 bg-slate-900 border-t border-slate-800 flex items-center gap-1.5">
+        <button onclick="toggleUserVoiceInput('chatbot-input', true)" title="Speak query" class="bg-slate-800 hover:bg-slate-700 text-indigo-300 p-2 rounded-lg text-xs">
+          🎙️
+        </button>
+        <input
+          id="chatbot-input"
+          type="text"
+          onkeydown="if(event.key==='Enter') sendChatbotQuery()"
+          placeholder="Ask anything or speak..."
+          class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white"
+        />
+        <button onclick="sendChatbotQuery()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-lg">
+          Ask
+        </button>
+      </div>
+    </div>
+
+    <button
+      onclick="toggleChatbotDrawer()"
+      aria-label="Open PHYX Personal AI Chatbot"
+      class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs px-4 py-3 rounded-full shadow-xl shadow-indigo-600/40 flex items-center gap-2 transition"
+    >
+      <span class="text-base">🤖</span> <span>Ask PHYX AI &amp; Web Help</span>
+    </button>
+  </div>
+
+  <!-- SECURE LOGIN / SIGN-UP MODAL WITH SERVER-VERIFIED CAPTCHA -->
+  <div id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="glass-card border-indigo-500/40 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 id="auth-modal-title" class="text-xl font-bold text-white">Welcome to PHYX</h2>
+          <p class="text-xs text-slate-400">Verify CAPTCHA to log in, create an account, or unlock all 8 Physics labs.</p>
+        </div>
+        <button onclick="closeAuthModal()" aria-label="Close modal" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+        <button id="auth-mode-login" onclick="setAuthMode('login')" class="py-2 rounded-lg bg-indigo-600 text-white">Login</button>
+        <button id="auth-mode-signup" onclick="setAuthMode('signup')" class="py-2 rounded-lg text-slate-400">Sign Up</button>
+      </div>
+
+      <div id="auth-error-box" class="hidden bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs px-3 py-2 rounded-lg"></div>
+
+      <form onsubmit="submitAuthForm(event)" class="space-y-3 text-xs">
+        <div id="auth-name-group" class="hidden space-y-1">
+          <label for="auth-name" class="text-slate-300 font-medium">Full Name</label>
+          <input id="auth-name" type="text" placeholder="e.g., Rudra Pratap Jena" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white" />
+        </div>
+
+        <div class="space-y-1">
+          <label for="auth-email" class="text-slate-300 font-medium">Email Address</label>
+          <input id="auth-email" type="email" required placeholder="student@physicsmind.edu" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white" />
+        </div>
+
+        <div class="space-y-1">
+          <label for="auth-password" class="text-slate-300 font-medium">Password</label>
+          <input id="auth-password" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white" />
+        </div>
+
+        <div id="auth-role-group" class="hidden space-y-1">
+          <label for="auth-role" class="text-slate-300 font-medium">Account Role</label>
+          <select id="auth-role" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+            <option value="student">Student (Adaptive Exam Prep)</option>
+            <option value="teacher">Teacher (Cohort Analytics)</option>
+          </select>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-indigo-300">🛡️ Human CAPTCHA Verification</span>
+            <button type="button" onclick="refreshCaptcha()" class="text-[11px] text-slate-400 hover:text-white underline">↻ New Challenge</button>
+          </div>
+          <div class="flex items-center gap-3">
+            <img id="captcha-img" src="" alt="CAPTCHA math challenge" class="h-12 rounded-lg border border-slate-700" />
+            <input
+              id="captcha-answer"
+              type="text"
+              required
+              placeholder="Answer"
+              class="w-24 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-center font-mono text-sm text-white"
+            />
+          </div>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition">
+          Verify CAPTCHA &amp; Login
+        </button>
+      </form>
+
+      <div class="border-t border-slate-800 pt-3 space-y-2">
+        <div class="text-[11px] text-center text-slate-400">Instant Demo Access (Unlocks All 8 Labs):</div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button onclick="loginDemo('student')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 py-2 rounded-xl font-semibold transition">
+            ⚡ Demo Student
+          </button>
+          <button onclick="loginDemo('teacher')" class="bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/40 py-2 rounded-xl font-semibold transition">
+            ⚡ Demo Teacher
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="visualizers.js"></script>
+  <script src="aria_lecture.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+backend/learner_state.json
+backend/*.tmp
+.vscode/
+.DS_Store
