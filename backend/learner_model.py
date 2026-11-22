@@ -142,6 +142,13 @@ def _seed_state() -> Dict[str, Any]:
 class LearnerModelStore:
     def __init__(self, path: str = STATE_FILE):
         self.path = path
+        try:
+            test_probe = f"{self.path}.probe"
+            with open(test_probe, "w", encoding="utf-8") as f:
+                f.write("ok")
+            os.remove(test_probe)
+        except OSError:
+            self.path = "/tmp/phyx_learner_state.json" 
         self.data = self._load()
 
     def _load(self) -> Dict[str, Any]:
